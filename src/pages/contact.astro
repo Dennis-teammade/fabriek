@@ -1,0 +1,109 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const endpoint = import.meta.env.PUBLIC_LEAD_FORM_ENDPOINT || "";
+const source = import.meta.env.PUBLIC_LEAD_SOURCE || "aifabriek-website";
+const hasEndpoint = Boolean(endpoint);
+---
+<BaseLayout title="Contact" description="Boek een AI Ops scan en deel je grootste operationele bottleneck.">
+  <section class="card">
+    <h1>Boek je AI Ops scan</h1>
+    <p>Vertel je grootste bottleneck. Je krijgt een concreet plan met prioriteiten en eerste KPI's.</p>
+
+    <form method="post" action={hasEndpoint ? endpoint : "#"} data-has-endpoint={String(hasEndpoint)}>
+      <label>
+        Naam
+        <input name="name" required autocomplete="name" />
+      </label>
+
+      <label>
+        E-mail
+        <input type="email" name="email" required autocomplete="email" />
+      </label>
+
+      <label>
+        Bedrijf
+        <input name="company" required autocomplete="organization" />
+      </label>
+
+      <label>
+        Rol
+        <input name="role" required />
+      </label>
+
+      <label>
+        Grootste bottleneck
+        <textarea name="bottleneck" rows="5" required></textarea>
+      </label>
+
+      <input type="hidden" name="source" value={source} />
+
+      <button type="submit" class="btn">Verstuur aanvraag</button>
+    </form>
+
+    {!hasEndpoint && (
+      <p class="note">
+        Form endpoint ontbreekt. Stel <code>PUBLIC_LEAD_FORM_ENDPOINT</code> in om directe CRM/webhook routing te activeren.
+      </p>
+    )}
+  </section>
+
+  <script>
+    const form = document.querySelector("form[data-has-endpoint]");
+    if (form) {
+      const hasEndpoint = form.getAttribute("data-has-endpoint") === "true";
+
+      if (!hasEndpoint) {
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+        });
+      }
+
+      form.addEventListener("submit", () => {
+        if (typeof window.__aifTrack === "function") {
+          window.__aifTrack("contact_form_submit", {
+            page_path: window.location.pathname,
+            form_id: "ai_ops_scan",
+          });
+        }
+      });
+    }
+  </script>
+
+  <style>
+    h1 {
+      font-family: "Merriweather", Georgia, serif;
+      margin-top: 0;
+    }
+
+    form {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    label {
+      display: grid;
+      gap: 0.35rem;
+      font-weight: 600;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid #ccd4cf;
+      border-radius: 10px;
+      padding: 0.62rem 0.7rem;
+      font: inherit;
+    }
+
+    .note {
+      margin-top: 1rem;
+      color: #8a3f00;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+  </style>
+</BaseLayout>

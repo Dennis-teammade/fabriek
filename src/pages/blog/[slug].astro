@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts, getPostBySlug } from "../../lib/content";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({ params: { slug: post.slug } }));
+}
+
+const slug = Astro.params.slug as string;
+const post = await getPostBySlug(slug);
+
+if (!post) {
+  return Astro.redirect("/blog");
+}
+---
+<BaseLayout
+  seo={{
+    title: post.metaTitle || post.title,
+    description: post.metaDescription || post.description,
+    canonicalUrl: post.canonicalUrl || `/blog/${post.slug}`,
+    imageUrl: post.metaImage,
+    type: "article"
+  }}
+>
+  <article class="card article">
+    <p class="meta"><a href="/blog">Terug naar blog</a></p>
+    <h1>{post.title}</h1>
+    <p class="description">{post.description}</p>
+    <div set:html={post.html} />
+    <hr />
+    <p>
+      Volgende stap: <a class="btn" href="/contact">plan een AI Ops scan</a>
+    </p>
+  </article>
+
+  <style>
+    .article {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .meta {
+      margin-top: 0;
+      font-size: 0.95rem;
+    }
+
+    h1 {
+      font-family: "Merriweather", Georgia, serif;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+
+    .description {
+      color: #495256;
+      margin-bottom: 1.25rem;
+    }
+
+    :global(.article h2),
+    :global(.article h3) {
+      margin-top: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</BaseLayout>

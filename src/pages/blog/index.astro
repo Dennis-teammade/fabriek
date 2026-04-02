@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts } from "../../lib/content";
+
+const posts = await getAllPosts();
+---
+<BaseLayout title="Blog" description="Praktische AI-operaties, CRM-automatisering en content workflows voor Belgische KMO's.">
+  <section class="card">
+    <h1>Blog</h1>
+    <p>Operationele gidsen, frameworks en praktijkvoorbeelden voor AI-implementatie.</p>
+  </section>
+
+  <section class="list">
+    {posts.map((post) => (
+      <article class="card">
+        <h2><a href={`/blog/${post.slug}`}>{post.title}</a></h2>
+        <p>{post.description}</p>
+        <a class="btn" href={`/blog/${post.slug}`}>Lees artikel</a>
+      </article>
+    ))}
+  </section>
+
+  <style>
+    .list {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Merriweather", Georgia, serif;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+  </style>
+</BaseLayout>

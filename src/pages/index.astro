@@ -1,0 +1,113 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllPosts } from "../lib/content";
+
+const posts = await getAllPosts();
+const featuredPosts = posts.slice(0, 3);
+---
+<BaseLayout
+  seo={{
+    title: "AI implementatie die werkt voor Belgische KMO's",
+    description:
+      "Praktische AI-operaties voor Belgische KMO's. Sneller van bottleneck naar werkbaar systeem met meetbare impact.",
+    canonicalPath: "/",
+    type: "website"
+  }}
+>
+  <section class="hero card">
+    <p class="kicker">AI Operations voor Belgische KMO's</p>
+    <h1>Van AI-experimenten naar een werkbaar commercieel systeem</h1>
+    <p>
+      AIFabriek helpt teams met een duidelijke bottleneck om in weken een gecontroleerde AI-workflow neer te zetten,
+      inclusief kwaliteitsgate en KPI-opvolging.
+    </p>
+    <div class="actions">
+      <a class="btn" href="/contact" data-track-event="primary_cta_click">Boek je 20-min AI Ops scan</a>
+      <a href="/blog">Lees praktijkartikelen</a>
+    </div>
+  </section>
+
+  <section class="grid two">
+    <article class="card">
+      <h2>Wat je krijgt</h2>
+      <ul>
+        <li>Focus op 1 commerciële of operationele bottleneck.</li>
+        <li>Concreet proces: input -> AI -> output -> review -> KPI.</li>
+        <li>Uitvoerbare implementatie zonder maandenlang traject.</li>
+      </ul>
+    </article>
+
+    <article class="card">
+      <h2>Bewijsgericht</h2>
+      <ul>
+        <li>Doorlooptijd en kwaliteit meetbaar vanaf dag 1.</li>
+        <li>Workflow eigenaarschap per team in plaats van tool-chaos.</li>
+        <li>Opschaling pas na stabiele resultaten.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="card">
+    <h2>Laatste artikelen</h2>
+    <div class="posts">
+      {featuredPosts.map((post) => (
+        <article>
+          <h3><a href={`/blog/${post.slug}`}>{post.title}</a></h3>
+          <p>{post.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .hero {
+      margin-bottom: 1.25rem;
+    }
+
+    .kicker {
+      font-weight: 700;
+      color: #0b6e5b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: "Merriweather", Georgia, serif;
+      line-height: 1.2;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .grid.two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .posts {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .posts h3 {
+      margin-bottom: 0.35rem;
+    }
+
+    @media (max-width: 760px) {
+      .grid.two {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

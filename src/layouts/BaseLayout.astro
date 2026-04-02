@@ -1,0 +1,341 @@
+---
+import { buildSeo, type SeoInput } from "../lib/seo";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  seo?: SeoInput;
+}
+
+const { title, description, canonicalUrl, seo: seoInput } = Astro.props;
+const seo = buildSeo(
+  {
+    title,
+    description,
+    canonicalUrl,
+    ...seoInput
+  },
+  {
+    site: Astro.site,
+    pathname: Astro.url.pathname
+  }
+);
+const fullTitle = seo.title.includes("AIFabriek") ? seo.title : `${seo.title} | AIFabriek`;
+const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID?.trim() || "";
+const enableAnalyticsInDev = import.meta.env.PUBLIC_ENABLE_ANALYTICS_IN_DEV === "true";
+const analyticsEnabled = gaMeasurementId.length > 0 && (import.meta.env.PROD || enableAnalyticsInDev);
+---
+<!doctype html>
+<html lang="nl-BE">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={seo.description} />
+    <meta name="robots" content={seo.robots} />
+    <link rel="canonical" href={seo.canonicalUrl} />
+    <meta property="og:site_name" content={seo.siteName} />
+    <meta property="og:type" content={seo.ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={seo.canonicalUrl} />
+    <meta property="og:image" content={seo.ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={seo.ogImage} />
+    <style>
+      :root {
+        --bg: #f6f4ef;
+        --surface: #ffffff;
+        --ink: #1f2a2e;
+        --muted: #5b6468;
+        --brand: #0d7a65;
+        --brand-dark: #085748;
+        --line: #d8ddd7;
+        --radius: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Source Sans 3", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at 20% 0%, #fef8e6 0%, var(--bg) 45%, #ecefe9 100%);
+        line-height: 1.6;
+      }
+
+      a {
+        color: var(--brand-dark);
+      }
+
+      .container {
+        width: min(1080px, 92vw);
+        margin: 0 auto;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(6px);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+      }
+
+      .brand {
+        font-family: "Merriweather", Georgia, serif;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .links {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .links a {
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      main {
+        padding: 2rem 0 3rem;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+      }
+
+      .btn {
+        display: inline-block;
+        background: var(--brand);
+        color: #fff;
+        border-radius: 999px;
+        padding: 0.65rem 1rem;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .btn:hover {
+        background: var(--brand-dark);
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 1.5rem 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .consent-banner {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        width: min(440px, calc(100vw - 2rem));
+        z-index: 30;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 16px 28px rgba(31, 42, 46, 0.16);
+        padding: 1rem;
+      }
+
+      .consent-banner[hidden] {
+        display: none;
+      }
+
+      .consent-banner h2 {
+        margin: 0 0 0.35rem;
+        font-size: 1rem;
+      }
+
+      .consent-banner p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .consent-actions {
+        margin-top: 0.85rem;
+        display: flex;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-secondary {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 0.55rem 0.9rem;
+        font-weight: 700;
+      }
+
+      @media (max-width: 640px) {
+        .links {
+          font-size: 0.95rem;
+          gap: 0.65rem;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+    {analyticsEnabled && (
+      <script is:inline>
+        {`(function () {
+  var measurementId = '${gaMeasurementId}';
+  var storageKey = 'aifabriek_cookie_consent';
+  var analyticsBooted = false;
+
+  function safeStorageGet() {
+    try {
+      return window.localStorage.getItem(storageKey);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function safeStorageSet(value) {
+    try {
+      window.localStorage.setItem(storageKey, value);
+    } catch (error) {
+      // Continue gracefully when storage is unavailable.
+    }
+  }
+
+  function getConsentChoice() {
+    var value = safeStorageGet();
+    return value === 'accepted' || value === 'rejected' ? value : null;
+  }
+
+  function initAnalytics() {
+    if (analyticsBooted) {
+      return;
+    }
+    analyticsBooted = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId);
+
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
+    document.head.appendChild(script);
+  }
+
+  function updateBanner(choice) {
+    var banner = document.querySelector('[data-consent-banner]');
+    if (!banner) {
+      return;
+    }
+    banner.hidden = Boolean(choice);
+  }
+
+  window.__aifCanTrack = function __aifCanTrack() {
+    return getConsentChoice() === 'accepted' && typeof window.gtag === 'function';
+  };
+
+  window.__aifTrack = function __aifTrack(eventName, params) {
+    if (!window.__aifCanTrack()) {
+      return;
+    }
+    window.gtag('event', eventName, params || {});
+  };
+
+  function applyConsent(choice) {
+    safeStorageSet(choice);
+    if (choice === 'accepted') {
+      initAnalytics();
+    }
+    updateBanner(choice);
+    window.dispatchEvent(new CustomEvent('aif:consent-updated', { detail: { choice: choice } }));
+  }
+
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-consent-action]');
+    if (button) {
+      var consentAction = button.getAttribute('data-consent-action');
+      if (consentAction === 'accept' || consentAction === 'reject') {
+        applyConsent(consentAction === 'accept' ? 'accepted' : 'rejected');
+      }
+      return;
+    }
+
+    var trackedElement = event.target.closest('[data-track-event]');
+    if (!trackedElement) {
+      return;
+    }
+    var eventName = trackedElement.getAttribute('data-track-event');
+    if (!eventName) {
+      return;
+    }
+    window.__aifTrack(eventName, {
+      page_path: window.location.pathname,
+      target: trackedElement.getAttribute('href') || trackedElement.tagName.toLowerCase()
+    });
+  });
+
+  var consentChoice = getConsentChoice();
+  if (consentChoice === 'accepted') {
+    initAnalytics();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      updateBanner(consentChoice);
+    });
+  } else {
+    updateBanner(consentChoice);
+  }
+})();`}
+      </script>
+    )}
+  </head>
+  <body>
+    <header>
+      <div class="container nav">
+        <a class="brand" href="/">AIFabriek</a>
+        <nav class="links" aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/blog">Blog</a>
+          <a href="/resources">Resources</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <footer>
+      <div class="container">AIFabriek website operations baseline v1.</div>
+    </footer>
+    {analyticsEnabled && (
+      <aside class="consent-banner" data-consent-banner hidden aria-live="polite">
+        <h2>Cookievoorkeuren</h2>
+        <p>We gebruiken analytics cookies alleen na jouw expliciete toestemming.</p>
+        <div class="consent-actions">
+          <button type="button" class="btn" data-consent-action="accept">Accepteren</button>
+          <button type="button" class="btn-secondary" data-consent-action="reject">Weigeren</button>
+        </div>
+      </aside>
+    )}
+  </body>
+</html>
